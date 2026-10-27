@@ -1,0 +1,58 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- namespace.yaml
+- ../vendor
+- sleep-denied.yaml
+namespace: mesh-lab
+labels:
+- pairs:
+    laboratorio.sre.dev/proprietario: mesh-apps-lab
+  includeSelectors: false
+patches:
+- target:
+    kind: Deployment
+    name: httpbin
+  patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: httpbin\nspec:\n\
+    \  template:\n    metadata:\n      annotations:\n        sidecar.istio.io/inject:\
+    \ 'false'\n        sidecar.istio.io/proxyCPU: 25m\n        sidecar.istio.io/proxyMemory:\
+    \ 64Mi\n        sidecar.istio.io/proxyCPULimit: 250m\n        sidecar.istio.io/proxyMemoryLimit:\
+    \ 128Mi\n    spec:\n      securityContext:\n        runAsNonRoot: true\n     \
+    \   seccompProfile:\n          type: RuntimeDefault\n      containers:\n     \
+    \ - name: httpbin\n        resources:\n          requests:\n            cpu: 10m\n\
+    \            memory: 32Mi\n          limits:\n            cpu: 100m\n        \
+    \    memory: 128Mi\n        securityContext:\n          allowPrivilegeEscalation:\
+    \ false\n          capabilities:\n            drop:\n            - ALL\n"
+- target:
+    kind: Deployment
+    name: sleep
+  patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: sleep\nspec:\n\
+    \  template:\n    metadata:\n      annotations:\n        sidecar.istio.io/inject:\
+    \ 'false'\n        sidecar.istio.io/proxyCPU: 25m\n        sidecar.istio.io/proxyMemory:\
+    \ 64Mi\n        sidecar.istio.io/proxyCPULimit: 250m\n        sidecar.istio.io/proxyMemoryLimit:\
+    \ 128Mi\n    spec:\n      securityContext:\n        runAsNonRoot: true\n     \
+    \   seccompProfile:\n          type: RuntimeDefault\n      containers:\n     \
+    \ - name: sleep\n        resources:\n          requests:\n            cpu: 10m\n\
+    \            memory: 32Mi\n          limits:\n            cpu: 100m\n        \
+    \    memory: 128Mi\n        securityContext:\n          allowPrivilegeEscalation:\
+    \ false\n          capabilities:\n            drop:\n            - ALL\n"
+- target:
+    kind: Deployment
+    name: sleep-denied
+  patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: sleep-denied\n\
+    spec:\n  template:\n    metadata:\n      annotations:\n        sidecar.istio.io/inject:\
+    \ 'false'\n        sidecar.istio.io/proxyCPU: 25m\n        sidecar.istio.io/proxyMemory:\
+    \ 64Mi\n        sidecar.istio.io/proxyCPULimit: 250m\n        sidecar.istio.io/proxyMemoryLimit:\
+    \ 128Mi\n    spec:\n      securityContext:\n        runAsNonRoot: true\n     \
+    \   seccompProfile:\n          type: RuntimeDefault\n      containers:\n     \
+    \ - name: sleep\n        resources:\n          requests:\n            cpu: 10m\n\
+    \            memory: 32Mi\n          limits:\n            cpu: 100m\n        \
+    \    memory: 128Mi\n        securityContext:\n          allowPrivilegeEscalation:\
+    \ false\n          capabilities:\n            drop:\n            - ALL\n"
+images:
+- name: quay.io/sail-dev/go-httpbin
+  newName: quay.io/sail-dev/go-httpbin
+  digest: sha256:24528cf5229d0b70065ac27e6c9e4d96f5452a84a3ce4433e56573c18d96827a
+- name: quay.io/sail-dev/curl
+  newName: quay.io/sail-dev/curl
+  digest: sha256:88a9abad9d958340e48564f9bdcdaa29916a2984be59314da709f8bbc0eef6f7

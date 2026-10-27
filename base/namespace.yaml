@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mesh-lab
+  labels:
+    laboratorio.sre.dev/proprietario: mesh-apps-lab
+    observability: enabled
+    istio-discovery: mesh-crc
+    istio.io/rev: ''

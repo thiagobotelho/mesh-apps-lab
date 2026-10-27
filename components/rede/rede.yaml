@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: httpbin-somente-sleep
+  namespace: mesh-lab
+  labels:
+    laboratorio.sre.dev/proprietario: mesh-apps-lab
+spec:
+  podSelector:
+    matchLabels:
+      app: httpbin
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: sleep
+    ports:
+    - protocol: TCP
+      port: 8080

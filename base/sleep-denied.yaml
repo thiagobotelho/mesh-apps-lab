@@ -1,0 +1,51 @@
+# Derivado do exemplo oficial sleep; identidades e seletores independentes.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sleep-denied
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sleep-denied
+  labels:
+    app: sleep-denied
+    service: sleep-denied
+spec:
+  ports:
+  - port: 80
+    name: http
+  selector:
+    app: sleep-denied
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep-denied
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep-denied
+  template:
+    metadata:
+      labels:
+        app: sleep-denied
+    spec:
+      terminationGracePeriodSeconds: 0
+      serviceAccountName: sleep-denied
+      containers:
+      - name: sleep
+        image: quay.io/sail-dev/curl
+        command:
+        - /bin/sleep
+        - infinity
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /etc/sleep/tls
+          name: secret-volume
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: sleep-secret
+          optional: true

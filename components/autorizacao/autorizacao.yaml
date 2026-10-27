@@ -1,0 +1,23 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: httpbin-get-sleep
+  namespace: mesh-lab
+  labels:
+    laboratorio.sre.dev/proprietario: mesh-apps-lab
+spec:
+  selector:
+    matchLabels:
+      app: httpbin
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/mesh-lab/sa/sleep
+    to:
+    - operation:
+        methods:
+        - GET
+        paths:
+        - /get
