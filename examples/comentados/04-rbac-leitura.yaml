@@ -1,0 +1,26 @@
+# Autorização da API Kubernetes: leitura de pods e seus logs no namespace.
+# Não controla tráfego HTTP entre aplicações nem permissões do Keycloak.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: leitura-pods-exemplo
+  namespace: mesh-lab # Role tem escopo de namespace, ao contrário de ClusterRole.
+rules:
+- apiGroups: [""] # Grupo core: pods; string vazia não significa todos os grupos.
+  resources: [pods, pods/log] # Não inclui Secrets, exec ou alterações de workloads.
+  verbs: [get, list, watch] # Nenhum create, update, patch ou delete.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: leitores-pods-exemplo
+  namespace: mesh-lab
+subjects:
+- kind: Group
+  name: leitores-exemplo # Grupo sintético; mapear sua origem antes de aplicar.
+  apiGroup: rbac.authorization.k8s.io
+roleRef: # Vincula os sujeitos à Role acima; não cria usuários ou grupos.
+  kind: Role
+  name: leitura-pods-exemplo
+  apiGroup: rbac.authorization.k8s.io
+# Logs podem conter informações sensíveis; conceda acesso apenas se necessário.

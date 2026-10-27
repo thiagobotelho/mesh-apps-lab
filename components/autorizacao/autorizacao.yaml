@@ -1,23 +1,34 @@
+# Aplicação L7: permite uma identidade, um método e um caminho específicos.
+# Pré-requisito: tráfego HTTP reconhecido pelo Istio e identidade via mTLS.
 apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
   name: httpbin-get-sleep
+  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: mesh-lab
   labels:
     laboratorio.sre.dev/proprietario: mesh-apps-lab
 spec:
+  # Seletores precisam corresponder aos labels dos recursos de destino.
   selector:
     matchLabels:
-      app: httpbin
+      app: httpbin # Workload de DESTINO.
   action: ALLOW
   rules:
   - from:
     - source:
         principals:
+        # trust domain / namespace / ServiceAccount da ORIGEM autenticada.
+        # Não é o nome do pod nem um usuário humano do Keycloak.
         - cluster.local/ns/mesh-lab/sa/sleep
-    to:
+    to: # A mesma regra exige origem E operação; entradas da lista são OU.
     - operation:
         methods:
         - GET
         paths:
-        - /get
+        - /get # Não permite todos os caminhos; evite '*' sem necessidade.
+# Com uma policy ALLOW aplicável, requisições sem match não são permitidas.
+# Outras policies ALLOW podem ampliar acessos; DENY tem precedência.
+# GET /get com a identidade correta: esperado 200 se aplicação/rede saudáveis.
+# POST /get ou identidade diferente: esperado 403 do proxy, se chegar a ele.
+# Uma NetworkPolicy pode bloquear antes do proxy e impedir observar o 403.

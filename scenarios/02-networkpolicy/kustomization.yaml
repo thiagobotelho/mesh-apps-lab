@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - ../../base
 - ../../components/rede
+# Namespace deste objeto; não confundir com seleção de namespaces de origem.
 namespace: mesh-lab
 labels:
 - pairs:

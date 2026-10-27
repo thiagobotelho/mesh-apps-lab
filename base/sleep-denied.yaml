@@ -15,6 +15,7 @@ spec:
   ports:
   - port: 80
     name: http
+  # Seletores precisam corresponder aos labels dos recursos de destino.
   selector:
     app: sleep-denied
 ---
@@ -23,6 +24,7 @@ kind: Deployment
 metadata:
   name: sleep-denied
 spec:
+  # Número de instâncias; réplicas isoladamente não garantem alta disponibilidade.
   replicas: 1
   selector:
     matchLabels:
