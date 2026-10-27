@@ -13,7 +13,7 @@ patches:
 - target:
     kind: Namespace
     name: mesh-lab
-  patch: "- op: replace\n  path: /metadata/labels/istio.io~1rev\n  value: mesh-crc\n"
+  patch: "- op: replace\n  path: /metadata/labels/istio.io~1rev\n  value: mesh-stable\n"
 - target:
     kind: Deployment
     name: (httpbin|sleep|sleep-denied)
