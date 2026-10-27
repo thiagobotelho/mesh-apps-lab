@@ -9,7 +9,7 @@ Exemplos e infraestrutura declarativos para estudar rede, segurança e observabi
 1. Ler [instalação](docs/INSTALACAO-CRC.md) e [requisitos](docs/REQUISITOS.md).
 2. Conferir contexto e recursos com `bash scripts/preflight.sh` (somente leitura).
 3. Validar fontes com `bash scripts/validate.sh` (kubectl, Python/PyYAML/jsonschema, Kubeconform 0.7.0 e ShellCheck).
-4. Manter Operator, plano de controle e monitoramento no Argo CD; aplicar os cenários manualmente pelo projeto mesh-apps-lab.
+4. Manter Operator, plano de controle e monitoramento na Application `service-mesh` do Argo CD; aplicar os cenários manualmente pelo projeto mesh-apps-lab.
 
 ## Cenários
 
