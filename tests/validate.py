@@ -38,6 +38,8 @@ if (root/'scenarios').exists():
    require(tpl['spec']['containers'][0]['securityContext']['capabilities']['drop']==['ALL'],'capacidade excessiva')
    injected=tpl['metadata']['annotations']['sidecar.istio.io/inject']
    require(injected==('false' if phase<'scenarios/03' else 'true'),'injeção na fase incorreta')
+  namespace=next(d for d in ds if d['kind']=='Namespace')
+  if phase>='scenarios/03':require(namespace['metadata']['labels'].get('istio.io/rev')=='mesh-stable','namespace não usa a tag estável')
   net=[d for d in ds if d['kind']=='NetworkPolicy'];auth=[d for d in ds if d['kind']=='AuthorizationPolicy'];mtls=[d for d in ds if d['kind']=='PeerAuthentication']
   require(bool(net)==(phase.endswith('02-networkpolicy') or phase.endswith('06-defense-in-depth')),'NetworkPolicy mascara outra fase')
   require(bool(auth)==(phase.endswith('05-authorization') or phase.endswith('06-defense-in-depth')),'L7 na fase incorreta')
