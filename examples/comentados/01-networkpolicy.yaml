@@ -1,0 +1,27 @@
+# Rede L3/L4: permite entrada TCP no httpbin a partir de pods app=sleep.
+# Depende de um plugin de rede com suporte a NetworkPolicy.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: httpbin-somente-sleep
+  namespace: mesh-lab # A policy e o destino estão neste namespace.
+  labels:
+    laboratorio.sre.dev/proprietario: mesh-apps-lab
+spec:
+  podSelector: # Seleciona os DESTINOS que serão protegidos.
+    matchLabels:
+      app: httpbin
+  policyTypes:
+  - Ingress # Controla entrada; este objeto não restringe saída (Egress).
+  ingress:
+  - from: # Origem permitida; uma lista de alternativas (OU).
+    - podSelector:
+        matchLabels:
+          app: sleep # Sem namespaceSelector, seleciona pods do mesmo namespace.
+    ports:
+    - protocol: TCP
+      port: 8080 # Porta de destino no pod, não a porta 8000 do Service.
+# Outros ingressos ficam bloqueados, exceto permissões de outras policies.
+# NetworkPolicies são aditivas: uma regra não anula a permissão de outra.
+# Labels de pods são seletores de rede; não são identidade criptográfica.
+# Não filtra GET/POST, caminhos HTTP ou identidade da ServiceAccount.

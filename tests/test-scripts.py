@@ -22,3 +22,26 @@ with tempfile.TemporaryDirectory() as tmp:
  assert p.returncode==2,'contexto divergente foi aceito'
  calls=(t/'chamadas').read_text();assert 'get nodes' not in calls and 'whoami' not in calls,'continuou após contexto inválido'
 print('PASS: contexto divergente bloqueado antes de consultas ao cluster')
+
+# A limpeza deve parar antes de qualquer delete quando uma fonte é gerenciada.
+import json
+with tempfile.TemporaryDirectory() as tmp:
+ t=pathlib.Path(tmp);mock=t/'oc'
+ mock.write_text('''#!/usr/bin/env python3
+import os,sys,json,pathlib
+args=' '.join(sys.argv[1:])
+if 'config view' in args:print('https://api.crc.testing:6443')
+elif 'get nodes' in args:print('crc')
+elif 'whoami' in args:print('usuario-sintetico')
+elif 'get applications' in args:print(os.environ['APPS_SINTETICAS'])
+elif 'delete ' in args:
+ pathlib.Path(os.environ['MARCADOR_DELETE']).touch()
+else:print('')
+''');mock.chmod(0o755)
+ for spec in [
+  {'source':{'repoURL':'https://github.com/thiagobotelho/mesh-apps-lab.git'}},
+  {'sources':[{'repoURL':'https://github.com/thiagobotelho/mesh-apps-lab.git'}]}]:
+  env={**os.environ,'PATH':str(t)+':'+os.environ['PATH'],'APPS_SINTETICAS':json.dumps({'items':[{'spec':spec}]}),'MARCADOR_DELETE':str(t/'delete')}
+  p=subprocess.run(['bash',str(root/'scripts/cleanup.sh'),'--confirmar-mesh-lab'],env=env,capture_output=True)
+  assert p.returncode==2 and not (t/'delete').exists(),'limpeza aceitou Application gerenciada'
+print('PASS: limpeza bloqueia source e sources antes de excluir recursos')

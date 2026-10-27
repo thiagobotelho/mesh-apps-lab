@@ -2,6 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - ../../base
+# Namespace deste objeto; não confundir com seleção de namespaces de origem.
 namespace: mesh-lab
 labels:
 - pairs:

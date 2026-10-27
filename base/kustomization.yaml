@@ -4,6 +4,7 @@ resources:
 - namespace.yaml
 - ../vendor
 - sleep-denied.yaml
+# Namespace deste objeto; não confundir com seleção de namespaces de origem.
 namespace: mesh-lab
 labels:
 - pairs:

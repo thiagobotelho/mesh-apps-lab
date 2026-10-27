@@ -1,13 +1,20 @@
+# Transporte: exige identidade e criptografia mTLS na entrada do destino.
+# Pré-requisito deste exemplo: sidecar Istio no destino e nos clientes mTLS.
 apiVersion: security.istio.io/v1
 kind: PeerAuthentication
 metadata:
   name: httpbin-strict
+  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: mesh-lab
   labels:
     laboratorio.sre.dev/proprietario: mesh-apps-lab
 spec:
-  selector:
+  # Seletores precisam corresponder aos labels dos recursos de destino.
+  selector: # Aplica somente aos workloads com este label, neste namespace.
     matchLabels:
       app: httpbin
   mtls:
-    mode: STRICT
+    mode: STRICT # Rejeita conexões plaintext para o workload protegido.
+# STRICT não escolhe quais identidades podem executar GET ou POST.
+# Para limitar identidade, método e caminho, use AuthorizationPolicy.
+# Uma falha de negociação TLS não deve ser interpretada como HTTP 403.

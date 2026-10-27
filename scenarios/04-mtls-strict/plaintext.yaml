@@ -13,6 +13,7 @@ spec:
   ports:
   - port: 80
     name: http
+  # Seletores precisam corresponder aos labels dos recursos de destino.
   selector:
     app: sleep-plain
 ---
@@ -21,6 +22,7 @@ kind: Deployment
 metadata:
   name: sleep-plain
 spec:
+  # Número de instâncias; réplicas isoladamente não garantem alta disponibilidade.
   replicas: 1
   selector:
     matchLabels:
@@ -51,6 +53,7 @@ spec:
           limits:
             cpu: 100m
             memory: 128Mi
+        # Restringe privilégios do processo; conferir compatibilidade com a SCC.
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
