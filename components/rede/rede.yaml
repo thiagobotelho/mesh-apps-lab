@@ -4,7 +4,6 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: httpbin-somente-sleep
-  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: mesh-lab # A policy e o destino estão neste namespace.
   labels:
     laboratorio.sre.dev/proprietario: mesh-apps-lab

@@ -1,16 +1,8 @@
 # Políticas por camada
 
-## O que observar
 
 Veja examples/comentados/README.md. NetworkPolicy seleciona pods e portas; PeerAuthentication exige mTLS; AuthorizationPolicy limita identidade/operação; Role/RoleBinding controlam a API Kubernetes. Teste cada camada separadamente antes de combiná-las. Labels de pods e ServiceAccounts têm papéis diferentes.
 
-## Roteiro de leitura e validação
+## Confirmar o resultado
 
-1. Leia o README e identifique o componente que recebe a configuração.
-2. Confira namespaces, seletores, portas, identidades e dependências nos exemplos.
-3. Ajuste apenas os campos necessários em um ambiente isolado; não use credenciais de produção.
-4. Valide sintaxe e contratos locais antes de aplicar. Registre o resultado real separado deste guia.
-5. Execute um caso permitido e um caso negado, conferindo a causa da resposta.
-6. Defina reversão por recurso/arquivo e preserve dados persistentes antes de mudanças.
-
-Os comentários dos manifests explicam escolhas; não comprovam disponibilidade do componente. Exemplos fora de entradas Kustomize não são implantados automaticamente.
+Valide o cliente permitido imediatamente antes do caso negativo. Timeout de transporte, rejeição mTLS e HTTP 403 são resultados diferentes: correlacione com OVN e logs do Envoy. O nome sleep-denied não concede nem nega acesso; quem decide são seletores, ServiceAccount e políticas do cenário aplicado.
