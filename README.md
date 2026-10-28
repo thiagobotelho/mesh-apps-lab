@@ -44,3 +44,7 @@ Documentação operacional em Markdown/português. YAML, shell, JSON e testes ma
 ## Aprender a configuração
 
 Consulte o [guia comentado](docs/APRENDIZADO.md) para entender componentes, escolhas, testes positivos/negativos e reversão.
+
+## Auditoria Allow/Drop
+
+Consulte o [guia de auditoria OVN](docs/AUDITORIA-OVN.md) para verificar decisões na interface do Console.
