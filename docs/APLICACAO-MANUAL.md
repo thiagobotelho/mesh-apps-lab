@@ -44,3 +44,15 @@ Confira a propriedade de cada objeto antes de removê-lo. O cliente plaintext s�
 Ao voltar ao baseline, remova também as políticas de Istio dos exercícios. Nas fases de mTLS e autorização isoladas, confirme que não restaram NetworkPolicies capazes de mascarar o resultado. As anotações dos templates controlam a injeção e disparam novos pods ao trocar de cenário.
 
 Consulte [EXERCICIOS.md](EXERCICIOS.md), [PLANO-DE-TESTES.md](PLANO-DE-TESTES.md) e [ROLLBACK-E-CLEANUP.md](ROLLBACK-E-CLEANUP.md). Nenhum cenário é sincronizado automaticamente.
+
+## Renovar conexões no cenário de defesa em profundidade
+
+Após aplicar scenarios/06-defense-in-depth, o Envoy pode continuar usando uma conexão anterior à NetworkPolicy. Execute:
+
+```bash
+bash scripts/test-defense-in-depth.sh --recriar-cliente
+```
+
+A opção recria somente os Pods do Deployment sleep-denied antes das chamadas; não muda políticas nem reinicia o destino. Sem a opção, o script testa as conexões existentes. Um 403 do destino não comprova bloqueio de rede: correlacione o novo IP do cliente com OVN/NetworkEvents.
+
+Os validadores reconhecem proxies tradicionais em containers e sidecars nativos em initContainers com restartPolicy Always e prontidão confirmada. Init containers convencionais de validação não contam como proxies ativos.
