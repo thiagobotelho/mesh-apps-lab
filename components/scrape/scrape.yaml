@@ -2,7 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: envoy-scrape
-  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: mesh-lab
   labels:
     laboratorio.sre.dev/proprietario: mesh-apps-lab

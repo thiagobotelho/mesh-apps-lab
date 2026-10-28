@@ -6,7 +6,6 @@ resources:
 - ../../components/mtls
 - ../../components/autorizacao
 - ../../components/scrape
-# Namespace deste objeto; não confundir com seleção de namespaces de origem.
 namespace: mesh-lab
 labels:
 - pairs:

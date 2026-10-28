@@ -4,7 +4,6 @@ apiVersion: security.istio.io/v1
 kind: PeerAuthentication
 metadata:
   name: httpbin-strict
-  # Namespace deste objeto; não confundir com seleção de namespaces de origem.
   namespace: mesh-lab
   labels:
     laboratorio.sre.dev/proprietario: mesh-apps-lab
