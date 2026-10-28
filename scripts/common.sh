@@ -35,10 +35,10 @@ sem_http() {
   printf 'PASS: %s → falha de transporte (curl %s); não é HTTP 403\n' "$*" "$RC"
 }
 proxies() {
-  local n nomes
+  local n
   for n in httpbin sleep sleep-denied; do
     "${OC[@]}" -n mesh-lab rollout status "deployment/$n" --timeout=120s
-    nomes=$("${OC[@]}" -n mesh-lab get pods -l "app=$n" -o jsonpath='{.items[*].spec.containers[*].name}')
-    [[ " $nomes " == *' istio-proxy '* ]] || falhar "proxy ausente em $n"
+    "${OC[@]}" -n mesh-lab get pods -l "app=$n" -o json | \
+      python3 "$(dirname "${BASH_SOURCE[0]}")/check-proxy.py" || falhar "proxy ausente ou não pronto em $n"
   done
 }

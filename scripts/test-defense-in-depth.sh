@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 source "$(dirname "$0")/common.sh"
 crc
+case "${1:-}" in
+  --recriar-cliente)
+    # Encerra conexões antigas do Envoy somente no cliente negativo dos exercícios.
+    "${OC[@]}" -n mesh-lab rollout restart deployment/sleep-denied
+    "${OC[@]}" -n mesh-lab rollout status deployment/sleep-denied --timeout=120s
+    ;;
+  '') ;;
+  *) falhar 'uso: test-defense-in-depth.sh [--recriar-cliente]' ;;
+esac
 proxies
 [[ $("${OC[@]}" -n mesh-lab get peerauthentication httpbin-strict -o jsonpath='{.spec.mtls.mode}') == STRICT ]] || bloqueado 'STRICT ausente'
 [[ $("${OC[@]}" -n mesh-lab get authorizationpolicy httpbin-get-sleep -o jsonpath='{.spec.action}') == ALLOW ]] || bloqueado 'política L7 ausente'

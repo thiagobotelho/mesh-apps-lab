@@ -4,7 +4,6 @@ resources:
 - namespace.yaml
 - ../vendor
 - sleep-denied.yaml
-# Namespace deste objeto; não confundir com seleção de namespaces de origem.
 namespace: mesh-lab
 labels:
 - pairs:
@@ -50,6 +49,11 @@ patches:
     \            memory: 32Mi\n          limits:\n            cpu: 100m\n        \
     \    memory: 128Mi\n        securityContext:\n          allowPrivilegeEscalation:\
     \ false\n          capabilities:\n            drop:\n            - ALL\n"
+- target:
+    kind: Deployment
+  patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: placeholder\n\
+    \  labels:\n    version: v1\nspec:\n  template:\n    metadata:\n      labels:\n\
+    \        version: v1\n"
 images:
 - name: quay.io/sail-dev/go-httpbin
   newName: quay.io/sail-dev/go-httpbin

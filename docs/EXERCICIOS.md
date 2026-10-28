@@ -13,8 +13,8 @@ A tabela apresenta os resultados esperados e os scripts de cada fase. Instale os
 | 05 | SA sleep, GET /get | HTTP 200 | test-authorization.sh |
 | 05 | SA sleep-denied, GET /get | HTTP 403 | test-authorization.sh |
 | 05 | SA sleep, POST /post e GET /headers | HTTP 403 | test-authorization.sh |
-| 06 | sleep-denied GET /get | falha L3/L4, sem 403 | test-defense-in-depth.sh |
-| 06 | sleep POST /post | HTTP 403 L7 | test-defense-in-depth.sh |
+| 06 | sleep-denied GET /get | falha L3/L4, sem 403 | test-defense-in-depth.sh --recriar-cliente |
+| 06 | sleep POST /post | HTTP 403 L7 | test-defense-in-depth.sh --recriar-cliente |
 
 ```bash
 oc --context=crc-admin --server=https://api.crc.testing:6443 -n mesh-lab get pods
@@ -28,3 +28,4 @@ istioctl --context=crc-admin proxy-status
 Cada teste rejeita divergências com código 1; pré-requisito ou acesso indisponível usa código 2 (`BLOCKED`). Erro de DNS (curl 6) nunca conta como bloqueio de NetworkPolicy. O teste positivo imediatamente anterior também detecta destino indisponível. Erros não reconhecidos exigem investigação; não ampliar arbitrariamente a lista para fazer o teste passar.
 
 Armazene registros de execução em diretório externo ao checkout. Não registre cookies, tokens, kubeconfig ou dados de Secrets.
+Para investigar resultados na interface, consulte o [guia de observabilidade do mesh](https://github.com/thiagobotelho/service-mesh-gitops/blob/main/docs/OBSERVABILIDADE.md).
