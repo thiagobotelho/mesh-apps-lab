@@ -2,6 +2,10 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: mesh-lab
+  annotations:
+    # Auditoria reversível de decisões OVN; não concede acesso nem altera regras.
+    # Use deny sem allow para reduzir volume fora dos exercícios.
+    k8s.ovn.org/acl-logging: '{"allow":"info","deny":"info"}'
   labels:
     laboratorio.sre.dev/proprietario: mesh-apps-lab
     observability: enabled
