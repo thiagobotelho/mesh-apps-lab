@@ -27,6 +27,8 @@ for p in root.rglob('*.md'):
 if (root/'scenarios').exists():
  for phase,ds in builds.items():
   if not phase.startswith('scenarios/'):continue
+  pki=phase.endswith('07-vault-pki')
+  expected_namespace='mesh-vault-lab' if pki else 'mesh-lab'
   deps={d['metadata']['name']:d for d in ds if d['kind']=='Deployment'}
   for name in ['httpbin','sleep','sleep-denied']:
    d=deps[name];tpl=d['spec']['template'];s=d['spec']['selector']['matchLabels']
@@ -37,20 +39,24 @@ if (root/'scenarios').exists():
    require('@sha256:' in tpl['spec']['containers'][0]['image'],'imagem sem digest')
    require(tpl['spec']['containers'][0]['securityContext']['capabilities']['drop']==['ALL'],'capacidade excessiva')
    injected=tpl['metadata']['annotations']['sidecar.istio.io/inject']
-   require(injected==('false' if phase<'scenarios/03' else 'true'),'injeção na fase incorreta')
+   require(injected==('false' if phase<'scenarios/03' or (pki and name=='sleep-denied') else 'true'),'injeção na fase incorreta')
   namespace=next(d for d in ds if d['kind']=='Namespace')
-  if phase>='scenarios/03':require(namespace['metadata']['labels'].get('istio.io/rev')=='mesh-stable','namespace não usa a tag estável')
+  if phase>='scenarios/03':require(namespace['metadata']['labels'].get('istio.io/rev')==('vault-stable' if pki else 'mesh-stable'),'namespace não usa a tag estável')
   net=[d for d in ds if d['kind']=='NetworkPolicy'];auth=[d for d in ds if d['kind']=='AuthorizationPolicy'];mtls=[d for d in ds if d['kind']=='PeerAuthentication']
-  require(bool(net)==(phase.endswith('02-networkpolicy') or phase.endswith('06-defense-in-depth')),'NetworkPolicy mascara outra fase')
-  require(bool(auth)==(phase.endswith('05-authorization') or phase.endswith('06-defense-in-depth')),'L7 na fase incorreta')
+  require(bool(net)==(phase.endswith('02-networkpolicy') or phase.endswith('06-defense-in-depth') or pki),'NetworkPolicy mascara outra fase')
+  require(bool(auth)==(phase.endswith('05-authorization') or phase.endswith('06-defense-in-depth') or pki),'L7 na fase incorreta')
   require(bool(mtls)==(phase>='scenarios/04'),'mTLS na fase incorreta')
   for d in net:
-   for rule in d['spec']['ingress']:
+   for rule in d['spec'].get('ingress',[]):
     require(rule['ports'][0]['port'] in [8080,15090],'porta de serviço usada em lugar da porta de container')
   for d in auth:
    rule=d['spec']['rules'][0]
-   require(rule['from'][0]['source']['principals']==['cluster.local/ns/mesh-lab/sa/sleep'],'principal amplo')
+   require(rule['from'][0]['source']['principals']==['cluster.local/ns/'+expected_namespace+'/sa/sleep'],'principal amplo')
    require(rule['to'][0]['operation']=={'methods':['GET'],'paths':['/get']},'permissão L7 ampla')
+  if pki:
+   require(namespace['metadata']['name']=='mesh-vault-lab','PKI altera namespace do mesh original')
+   require(namespace['metadata']['labels']['istio-discovery']=='mesh-vault','descoberta do plano de controle incorreta')
+   require(any(x['metadata']['name']=='default-deny-ingress' and not x['spec'].get('ingress') for x in net),'isolamento de ingress ausente')
   if phase.endswith('04-mtls-strict'):
    require(deps['sleep-plain']['spec']['template']['metadata']['annotations']['sidecar.istio.io/inject']=='false','cliente negativo recebeu proxy')
  # Originais vendorizados não podem ser alterados silenciosamente.

@@ -1,6 +1,6 @@
 # mesh-apps-lab
 
-Workloads oficiais httpbin e sleep, segundo cliente sleep-denied e seis cenários independentes de rede, mTLS e autorização.
+Workloads oficiais httpbin e sleep, segundo cliente sleep-denied e cenários independentes de rede, mTLS e autorização.
 
 Exemplos e infraestrutura declarativos para estudar rede, segurança e observabilidade no OpenShift Local.
 
@@ -48,3 +48,7 @@ Consulte o [guia comentado](docs/APRENDIZADO.md) para entender componentes, esco
 ## Auditoria Allow/Drop
 
 Consulte o [guia de auditoria OVN](docs/AUDITORIA-OVN.md) para verificar decisões na interface do Console.
+
+## PKI Vault
+
+O cenário `scenarios/07-vault-pki/` usa o namespace mesh-vault-lab e a tag vault-stable. Requer o plano de controle opcional, cert-manager, istio-csr e Vault previamente preparados. Consulte [o exercício PKI](docs/PKI-VAULT.md). O cliente sleep-denied fica intencionalmente sem proxy nesse cenário.
